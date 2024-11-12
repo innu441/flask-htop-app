@@ -1,0 +1,33 @@
+from flask import Flask
+import os
+from datetime import datetime
+import subprocess
+import pytz  # Import the pytz library
+
+app = Flask(__name__)
+
+@app.route('/htop')
+def htop():
+    # Retrieve system info
+    full_name = "Your Full Name"  # Replace with your full name
+    username = os.getlogin()
+
+    # Set server time in IST
+    ist = pytz.timezone("Asia/Kolkata")
+    server_time = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S')
+
+    # Get top command output
+    top_output = subprocess.check_output(["top", "-bn", "1"]).decode("utf-8")
+
+    # HTML template
+    html_content = f"""
+    <h1>System Information</h1>
+    <p><strong>Name:</strong> {full_name}</p>
+    <p><strong>Username:</strong> {username}</p>
+    <p><strong>Server Time (IST):</strong> {server_time}</p>
+    <pre>{top_output}</pre>
+    """
+    return html_content
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000)
